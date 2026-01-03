@@ -1,5 +1,4 @@
 ﻿Imports System.Globalization
-Imports System.Security.Policy
 
 Public Class CalculatorForm
     Private eventName As String = ""
@@ -23,7 +22,7 @@ Public Class CalculatorForm
         If SelectReportDialog.ShowDialog = DialogResult.OK Then
             pathStatus.Text = SelectReportDialog.FileName
             playersDict.Clear()
-            Dim objFile As New System.IO.StreamReader(SelectReportDialog.FileName)
+            Dim objFile As New IO.StreamReader(SelectReportDialog.FileName)
             Dim line As String = objFile.ReadLine()
             Do Until line Is Nothing
                 Dim prefix As String = Microsoft.VisualBasic.Left(line, 3)
@@ -45,13 +44,13 @@ Public Class CalculatorForm
                         Try
                             startDate = DateTime.ParseExact(value, "yyyy/MM/dd", CultureInfo.InvariantCulture)
                         Catch ex As Exception
-                            MessageBox.Show("Invalid start date: " & value, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            MessageBox.Show("Invalid start date: " & value & ".Expected yyyy/MM/dd", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                         End Try
                     Case "052"
                         Try
                             endDate = DateTime.ParseExact(value, "yyyy/MM/dd", CultureInfo.InvariantCulture)
                         Catch ex As Exception
-                            MessageBox.Show("Invalid end date: " & value, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            MessageBox.Show("Invalid end date: " & value & ".Expected yyyy/MM/dd", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                         End Try
                     Case "062"
                         If Not UShort.TryParse(value, playersNo) Then
@@ -71,7 +70,7 @@ Public Class CalculatorForm
                         rate = value
                     Case "132"
                         For i = 92 To line.Length Step 10
-                            Dim span As String = Microsoft.VisualBasic.Mid(line, i, 8)
+                            Dim span As String = Mid(line, i, 8)
                             rounds.Add(DateTime.ParseExact(span, "yy/MM/dd", Nothing))
                         Next i
                 End Select
@@ -198,8 +197,6 @@ Public Class CalculatorForm
             Debug.WriteLine(WIMsOther)
             Debug.WriteLine(WFMsOther)
             Debug.WriteLine("====================================================================")
-
-            Dim pom As Byte
         End If
     End Sub
 
@@ -262,8 +259,8 @@ Public Class CalculatorForm
                     newRow("Title") = "WCM"
                 Case Else
                     newRow("Title") = ""
-
             End Select
+
             newRow("Name") = player.name
             newRow("Rating") = player.rating
             newRow("Federation") = player.federation
@@ -277,8 +274,8 @@ Public Class CalculatorForm
             newRow("WGMs") = CountWGMOpponents(player)
             newRow("WIMs") = CountWIMOpponents(player)
             newRow("WFMs") = CountWFMOpponents(player)
-            newRow("Delta") = GetDelta(player)
-            newRow("Perf") = GetAverageRating(player) + GetDelta(player)
+            newRow("Delta") = player.GetDelta()
+            newRow("Perf") = GetAverageRating(player) + player.GetDelta()
             newRow("ARO") = GetAverageRating(player)
             newRow("GM raised") = RaiseGMAverageRating(player)
             newRow("IM raised") = RaiseIMAverageRating(player)
@@ -320,7 +317,7 @@ Public Class CalculatorForm
         End If
 
         Dim title As String = ""
-        Dim delta As Single = GetDelta(player)
+        Dim delta As Single = player.GetDelta()
         Dim WFMs = CountWFMOpponents(player)
         Dim WIMs = CountWIMOpponents(player)
         Dim WGMs = CountWGMOpponents(player)
@@ -379,8 +376,8 @@ Public Class CalculatorForm
             (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
             GMs / count > 1 / 3 And
             GMs >= 3 And
-            RaiseIMAverageRating(player) + delta >= 2600 Then
-            title = "IM"
+            RaiseGMAverageRating(player) + delta >= 2600 Then
+            title = "GM"
         End If
 
         Return title
@@ -418,34 +415,6 @@ Public Class CalculatorForm
         Return countryNo >= 2
     End Function
 
-    Function GetDelta(ByRef player As Player)
-        Dim points As Single = 0
-        Dim count As Single = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN
-                        points += 1
-                        count += 1
-                    Case Round.Result.DRAW_NO1, Round.Result.DRAW
-                        points += 0.5
-                        count += 1
-                    Case Round.Result.LOSE_NO1, Round.Result.LOSE
-                        count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        If count = 0 Then
-            Return 0
-        End If
-
-        Return PercentToDelta(points, count)
-
-    End Function
-
     Public Function GetAverageRating(ByRef player As Player) As Single
         Dim ratings As New List(Of UShort)
         For Each roundItem As Round In player.rounds
@@ -473,7 +442,7 @@ Public Class CalculatorForm
         End If
     End Function
 
-    Public Function RaiseGMAverageRating(ByRef player As Player) As Single
+    Public Function RaiseTitleAverageRating(ByRef player As Player, floor As UShort) As Single
         Dim ratings As New List(Of UShort)
         For Each roundItem As Round In player.rounds
             Try
@@ -496,199 +465,66 @@ Public Class CalculatorForm
         Dim sum As Single = ratings.Sum(Function(item) item)
         Dim minimum As UShort = ratings.Min()
         Dim count As Byte = ratings.Count()
-        If minimum < 2200 Then
+        If minimum < floor Then
             sum -= minimum
-            sum += 2200
+            sum += floor
         End If
 
         Return sum / count
+    End Function
+
+    Public Function RaiseGMAverageRating(ByRef player As Player) As Single
+        Return RaiseTitleAverageRating(player, 2200)
     End Function
 
     Public Function RaiseIMAverageRating(ByRef player As Player) As Single
-        Dim ratings As New List(Of UShort)
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).rating > 1400 Then
-                            ratings.Add(playersDict(roundItem.OpponentID).rating)
-                        Else
-                            ratings.Add(1400)
-                        End If
-                End Select
-            Catch ex As Exception
-            End Try
-        Next
-
-        If ratings.Count = 0 Then
-            Return 0
-        End If
-
-        Dim sum As Single = ratings.Sum(Function(item) item)
-        Dim minimum As UShort = ratings.Min()
-        Dim count As Byte = ratings.Count()
-        If minimum < 2050 Then
-            sum -= minimum
-            sum += 2050
-        End If
-
-        Return sum / count
+        Return RaiseTitleAverageRating(player, 2050)
     End Function
 
     Public Function RaiseWGMAverageRating(ByRef player As Player) As Single
-        Dim ratings As New List(Of UShort)
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).rating > 1400 Then
-                            ratings.Add(playersDict(roundItem.OpponentID).rating)
-                        Else
-                            ratings.Add(1400)
-                        End If
-                End Select
-            Catch ex As Exception
-            End Try
-        Next
-
-        If ratings.Count = 0 Then
-            Return 0
-        End If
-
-        Dim sum As Single = ratings.Sum(Function(item) item)
-        Dim minimum As UShort = ratings.Min()
-        Dim count As Byte = ratings.Count()
-        If minimum < 2000 Then
-            sum -= minimum
-            sum += 2000
-        End If
-
-        Return sum / count
+        Return RaiseTitleAverageRating(player, 2000)
     End Function
 
     Public Function RaiseWIMAverageRating(ByRef player As Player) As Single
-        Dim ratings As New List(Of UShort)
+        Return RaiseTitleAverageRating(player, 1850)
+    End Function
+
+
+    Public Function CountTitleOpponents(ByRef player As Player, title As Player.Title) As Byte
+        Dim count As Byte = 0
         For Each roundItem As Round In player.rounds
             Try
                 Select Case roundItem.GameResult
                     Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).rating > 1400 Then
-                            ratings.Add(playersDict(roundItem.OpponentID).rating)
-                        Else
-                            ratings.Add(1400)
-                        End If
+                        If playersDict(roundItem.OpponentID).playerTitle = title Then count += 1
                 End Select
             Catch ex As Exception
+
             End Try
         Next
 
-        If ratings.Count = 0 Then
-            Return 0
-        End If
-
-        Dim sum As Single = ratings.Sum(Function(item) item)
-        Dim minimum As UShort = ratings.Min()
-        Dim count As Byte = ratings.Count()
-        If minimum < 1850 Then
-            sum -= minimum
-            sum += 1850
-        End If
-
-        Return sum / count
+        Return count
     End Function
-
 
 
     Public Function CountGMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.GM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.GM)
     End Function
     Public Function CountIMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.IM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.IM)
     End Function
     Public Function CountFMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.FM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.FM)
     End Function
     Public Function CountWGMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.WGM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.WGM)
     End Function
     Public Function CountWIMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.WIM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.WIM)
     End Function
 
     Public Function CountWFMOpponents(ByRef player As Player) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = Player.Title.WFM Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
+        Return CountTitleOpponents(player, Player.Title.WFM)
     End Function
     Private Sub Options_Click(sender As Object, e As EventArgs) Handles Options.Click
         If OptionsForm.ShowDialog() = DialogResult.OK Then
@@ -697,116 +533,4 @@ Public Class CalculatorForm
             RefreshData()
         End If
     End Sub
-
-    Function PercentToDelta(points As Single, count As Single) As Single
-        Select Case Math.Round(points / count, 2)
-            Case 1
-                Return 800
-            Case 0.99 To 1
-                Return 677
-            Case 0.98 To 0.99
-                Return 589
-            Case 0.97 To 0.98
-                Return 538
-            Case 0.96 To 0.97
-                Return 501
-            Case 0.95 To 0.96
-                Return 470
-            Case 0.94 To 0.95
-                Return 444
-            Case 0.93 To 0.94
-                Return 422
-            Case 0.92 To 0.93
-                Return 401
-            Case 0.91 To 0.92
-                Return 383
-            Case 0.9 To 0.91
-                Return 366
-            Case 0.89 To 0.9
-                Return 351
-            Case 0.88 To 0.89
-                Return 336
-            Case 0.87 To 0.88
-                Return 322
-            Case 0.86 To 0.87
-                Return 309
-            Case 0.85 To 0.86
-                Return 296
-            Case 0.84 To 0.85
-                Return 284
-            Case 0.83 To 0.84
-                Return 273
-            Case 0.82 To 0.83
-                Return 262
-            Case 0.81 To 0.82
-                Return 251
-            Case 0.8 To 0.81
-                Return 240
-            Case 0.79 To 0.8
-                Return 230
-            Case 0.78 To 0.79
-                Return 220
-            Case 0.77 To 0.78
-                Return 211
-            Case 0.76 To 0.77
-                Return 202
-            Case 0.75 To 0.76
-                Return 193
-            Case 0.74 To 0.75
-                Return 184
-            Case 0.73 To 0.74
-                Return 175
-            Case 0.72 To 0.73
-                Return 166
-            Case 0.71 To 0.72
-                Return 158
-            Case 0.7 To 0.71
-                Return 149
-            Case 0.69 To 0.7
-                Return 141
-            Case 0.68 To 0.69
-                Return 133
-            Case 0.67 To 0.68
-                Return 125
-            Case 0.66 To 0.67
-                Return 117
-            Case 0.65 To 0.66
-                Return 110
-            Case 0.64 To 0.65
-                Return 102
-            Case 0.63 To 0.64
-                Return 95
-            Case 0.62 To 0.63
-                Return 87
-            Case 0.61 To 0.62
-                Return 80
-            Case 0.6 To 0.61
-                Return 72
-            Case 0.59 To 0.6
-                Return 65
-            Case 0.58 To 0.59
-                Return 57
-            Case 0.57 To 0.58
-                Return 50
-            Case 0.56 To 0.57
-                Return 43
-            Case 0.55 To 0.56
-                Return 36
-            Case 0.54 To 0.55
-                Return 29
-            Case 0.53 To 0.54
-                Return 21
-            Case 0.52 To 0.53
-                Return 5714
-            Case 0.51 To 0.52
-                Return 7
-            Case 0.5 To 0.51
-                Return 0
-            Case 0.5
-                Return 0
-            Case Else
-                Return -PercentToDelta(count - points, count)
-        End Select
-
-    End Function
 End Class

@@ -31,6 +31,8 @@ Partial Class OptionsForm
         ' twoFederationCB
         ' 
         twoFederationCB.AutoSize = True
+        twoFederationCB.Checked = True
+        twoFederationCB.CheckState = CheckState.Checked
         twoFederationCB.Location = New Point(12, 12)
         twoFederationCB.Name = "twoFederationCB"
         twoFederationCB.Size = New Size(106, 21)
