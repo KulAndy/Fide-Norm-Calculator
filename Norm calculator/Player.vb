@@ -5,15 +5,15 @@
     End Enum
 
     Public Enum Title
-        GM
-        IM
-        WGM
-        FM
-        WIM
-        CM
-        WFM
-        WCM
         NONE
+        WCM
+        WFM
+        CM
+        WIM
+        FM
+        WGM
+        IM
+        GM
     End Enum
 
     Public playerSex As Sex

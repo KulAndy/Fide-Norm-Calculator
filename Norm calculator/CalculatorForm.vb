@@ -347,7 +347,7 @@ Public Class CalculatorForm
         End If
 
 
-        If player.playerTitle > Player.Title.WIM And
+        If player.playerTitle < Player.Title.WIM And
             player.playerSex = Player.Sex.W And
             (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
             (WIMs + WGMs + IMs + GMs) / count > 1 / 3 And
@@ -355,7 +355,7 @@ Public Class CalculatorForm
             RaiseWIMAverageRating(player) + delta >= 2250 Then
             title = "WIM"
         End If
-        If player.playerTitle > Player.Title.WGM And
+        If player.playerTitle < Player.Title.WGM And
             player.playerSex = Player.Sex.W And
             (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
             (WGMs + IMs + GMs) / count > 1 / 3 And
@@ -364,7 +364,7 @@ Public Class CalculatorForm
             title = "WGM"
         End If
 
-        If player.playerTitle > Player.Title.IM And
+        If player.playerTitle < Player.Title.IM And
             (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
             (IMs + GMs) / count > 1 / 3 And
             (IMs + GMs) >= 3 And
@@ -372,7 +372,7 @@ Public Class CalculatorForm
             title = "IM"
         End If
 
-        If player.playerTitle > Player.Title.GM And
+        If player.playerTitle < Player.Title.GM And
             (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
             GMs / count > 1 / 3 And
             GMs >= 3 And
