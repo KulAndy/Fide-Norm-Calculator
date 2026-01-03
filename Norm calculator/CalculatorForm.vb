@@ -346,35 +346,36 @@ Public Class CalculatorForm
             Return ""
         End If
 
+        Dim titled = WFMs + WIMs + WGMs + FMs + IMs + GMs
 
         If player.playerTitle < Player.Title.WIM And
             player.playerSex = Player.Sex.W And
-            (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
-            (WIMs + WGMs + IMs + GMs) / count > 1 / 3 And
+            titled * 1.0 / count >= 1.0 / 2.0 And
+            (WIMs + WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WIMs + WGMs + IMs + GMs) >= 3 And
             RaiseWIMAverageRating(player) + delta >= 2250 Then
             title = "WIM"
         End If
         If player.playerTitle < Player.Title.WGM And
             player.playerSex = Player.Sex.W And
-            (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
-            (WGMs + IMs + GMs) / count > 1 / 3 And
+            titled * 1.0 / count >= 1.0 / 2.0 And
+            (WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WGMs + IMs + GMs) >= 3 And
             RaiseWGMAverageRating(player) + delta >= 2400 Then
             title = "WGM"
         End If
 
         If player.playerTitle < Player.Title.IM And
-            (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
-            (IMs + GMs) / count > 1 / 3 And
+            titled * 1.0 / count >= 1.0 / 2.0 And
+            (IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (IMs + GMs) >= 3 And
             RaiseIMAverageRating(player) + delta >= 2450 Then
             title = "IM"
         End If
 
         If player.playerTitle < Player.Title.GM And
-            (WFMs + WIMs + WGMs + FMs + IMs + GMs) / count > 1 / 2 And
-            GMs / count > 1 / 3 And
+            titled * 1.0 / count >= 1.0 / 2.0 And
+            GMs * 1.0 / count >= 1.0 / 3.0 And
             GMs >= 3 And
             RaiseGMAverageRating(player) + delta >= 2600 Then
             title = "GM"
