@@ -15,8 +15,9 @@ Public Class CalculatorForm
     Dim rounds As New List(Of Date)()
     Dim playersDict As New Dictionary(Of UShort, Player)
 
-    Dim twoFederations As Boolean = False
+    Dim twoFederations As Boolean = True
     Dim roundRobinUnrated As Boolean = False
+    Dim onlyGained As Boolean = False
 
     Private Sub OpenFile_Click(sender As Object, e As EventArgs) Handles OpenFile.Click
         If SelectReportDialog.ShowDialog = DialogResult.OK Then
@@ -266,7 +267,12 @@ Public Class CalculatorForm
             newRow("Federation") = player.federation
             newRow("FideID") = player.fideId
             newRow("Birthday") = If(player.birthday = "0000-00-00", "", player.birthday)
-            newRow("Norm") = GetNorm(player)
+            Dim norm = GetNorm(player)
+            newRow("Norm") = norm
+            If norm = "" And onlyGained Then
+                Continue For
+            End If
+
             newRow("Points") = player.GetPoints()
             newRow("GMs") = CountGMOpponents(player)
             newRow("IMs") = CountIMOpponents(player)
@@ -342,15 +348,14 @@ Public Class CalculatorForm
             End Try
         Next
 
-        If points / count < 0.35 Then
+        Dim titled = WFMs + WIMs + WGMs + FMs + IMs + GMs
+        If points / count < 0.35 Or titled * 1.0 / count < 1.0 / 2.0 Then
             Return ""
         End If
 
-        Dim titled = WFMs + WIMs + WGMs + FMs + IMs + GMs
 
         If player.playerTitle < Player.Title.WIM And
             player.playerSex = Player.Sex.W And
-            titled * 1.0 / count >= 1.0 / 2.0 And
             (WIMs + WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WIMs + WGMs + IMs + GMs) >= 3 And
             RaiseWIMAverageRating(player) + delta >= 2250 Then
@@ -358,7 +363,6 @@ Public Class CalculatorForm
         End If
         If player.playerTitle < Player.Title.WGM And
             player.playerSex = Player.Sex.W And
-            titled * 1.0 / count >= 1.0 / 2.0 And
             (WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WGMs + IMs + GMs) >= 3 And
             RaiseWGMAverageRating(player) + delta >= 2400 Then
@@ -366,7 +370,6 @@ Public Class CalculatorForm
         End If
 
         If player.playerTitle < Player.Title.IM And
-            titled * 1.0 / count >= 1.0 / 2.0 And
             (IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (IMs + GMs) >= 3 And
             RaiseIMAverageRating(player) + delta >= 2450 Then
@@ -374,7 +377,6 @@ Public Class CalculatorForm
         End If
 
         If player.playerTitle < Player.Title.GM And
-            titled * 1.0 / count >= 1.0 / 2.0 And
             GMs * 1.0 / count >= 1.0 / 3.0 And
             GMs >= 3 And
             RaiseGMAverageRating(player) + delta >= 2600 Then
@@ -531,6 +533,7 @@ Public Class CalculatorForm
         If OptionsForm.ShowDialog() = DialogResult.OK Then
             twoFederations = OptionsForm.twoFederationCB.Checked
             roundRobinUnrated = OptionsForm.RRUnratedCB.Checked
+            onlyGained = OptionsForm.OnlyGainedCB.Checked
             RefreshData()
         End If
     End Sub

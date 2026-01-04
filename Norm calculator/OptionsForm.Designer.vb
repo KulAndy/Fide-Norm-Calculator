@@ -26,6 +26,7 @@ Partial Class OptionsForm
         RRUnratedCB = New CheckBox()
         OKButton = New Button()
         CancelButton = New Button()
+        OnlyGainedCB = New CheckBox()
         SuspendLayout()
         ' 
         ' twoFederationCB
@@ -33,9 +34,9 @@ Partial Class OptionsForm
         twoFederationCB.AutoSize = True
         twoFederationCB.Checked = True
         twoFederationCB.CheckState = CheckState.Checked
-        twoFederationCB.Location = New Point(12, 12)
+        twoFederationCB.Location = New Point(12, 11)
         twoFederationCB.Name = "twoFederationCB"
-        twoFederationCB.Size = New Size(106, 21)
+        twoFederationCB.Size = New Size(96, 19)
         twoFederationCB.TabIndex = 0
         twoFederationCB.Text = "2 Federations"
         twoFederationCB.UseVisualStyleBackColor = True
@@ -43,37 +44,48 @@ Partial Class OptionsForm
         ' RRUnratedCB
         ' 
         RRUnratedCB.AutoSize = True
-        RRUnratedCB.Location = New Point(12, 39)
+        RRUnratedCB.Location = New Point(12, 34)
         RRUnratedCB.Name = "RRUnratedCB"
-        RRUnratedCB.Size = New Size(146, 21)
+        RRUnratedCB.Size = New Size(133, 19)
         RRUnratedCB.TabIndex = 1
         RRUnratedCB.Text = "round robin unrated"
         RRUnratedCB.UseVisualStyleBackColor = True
         ' 
         ' OKButton
         ' 
-        OKButton.Location = New Point(219, 128)
+        OKButton.Location = New Point(219, 113)
         OKButton.Name = "OKButton"
-        OKButton.Size = New Size(75, 23)
+        OKButton.Size = New Size(75, 20)
         OKButton.TabIndex = 2
         OKButton.Text = "OK"
         OKButton.UseVisualStyleBackColor = True
         ' 
         ' CancelButton
         ' 
-        CancelButton.Location = New Point(315, 128)
+        CancelButton.Location = New Point(315, 113)
         CancelButton.Name = "CancelButton"
-        CancelButton.Size = New Size(75, 23)
+        CancelButton.Size = New Size(75, 20)
         CancelButton.TabIndex = 3
         CancelButton.Text = "Cancel"
         CancelButton.UseVisualStyleBackColor = True
         ' 
+        ' OnlyGainedCB
+        ' 
+        OnlyGainedCB.AutoSize = True
+        OnlyGainedCB.Location = New Point(12, 59)
+        OnlyGainedCB.Name = "OnlyGainedCB"
+        OnlyGainedCB.Size = New Size(90, 19)
+        OnlyGainedCB.TabIndex = 4
+        OnlyGainedCB.Text = "Only gained"
+        OnlyGainedCB.UseVisualStyleBackColor = True
+        ' 
         ' OptionsForm
         ' 
         AcceptButton = OKButton
-        AutoScaleDimensions = New SizeF(7F, 17F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(402, 163)
+        ClientSize = New Size(402, 144)
+        Controls.Add(OnlyGainedCB)
         Controls.Add(CancelButton)
         Controls.Add(OKButton)
         Controls.Add(RRUnratedCB)
@@ -89,4 +101,5 @@ Partial Class OptionsForm
     Friend WithEvents RRUnratedCB As CheckBox
     Friend WithEvents OKButton As Button
     Friend WithEvents CancelButton As Button
+    Friend WithEvents OnlyGainedCB As CheckBox
 End Class
