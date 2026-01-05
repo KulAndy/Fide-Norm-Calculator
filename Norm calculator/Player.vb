@@ -69,6 +69,29 @@
         Next i
     End Sub
 
+    Public Function GetFirstName() As String
+        If String.IsNullOrWhiteSpace(name) Then Return ""
+
+        Dim idx As Integer = name.IndexOf(","c)
+        If idx = -1 OrElse idx = name.Length - 1 Then
+            Return ""
+        End If
+
+        Return name.Substring(idx + 1).Trim()
+    End Function
+
+
+    Public Function GetLastName() As String
+        If String.IsNullOrWhiteSpace(name) Then Return ""
+
+        Dim idx As Integer = name.IndexOf(","c)
+        If idx = -1 Then
+            Return name.Trim()
+        End If
+
+        Return name.Substring(0, idx).Trim()
+    End Function
+
     Public Function GetPoints() As Single
         Dim points As Single = 0
         For Each roundItem As Round In rounds
@@ -210,7 +233,7 @@
             Case 0.53 To 0.54
                 Return 21
             Case 0.52 To 0.53
-                Return 5714
+                Return 14
             Case 0.51 To 0.52
                 Return 7
             Case 0.5 To 0.51
@@ -222,4 +245,27 @@
         End Select
 
     End Function
+
+    Public Function GetReversedDelta(delta As Integer) As Single
+        Dim low As Single = 0.5F
+        Dim high As Single = 1.0F
+        Dim mid As Single = 0.0F
+        Dim result As Single = 0.0F
+        Dim bestPercent As Single = 0.0F
+
+        While high - low > 0.001F
+            mid = (low + high) / 2
+            result = PercentToDelta(mid, 1)
+
+            If result >= delta Then
+                bestPercent = mid
+                high = mid
+            Else
+                low = mid
+            End If
+        End While
+
+        Return bestPercent
+    End Function
+
 End Class

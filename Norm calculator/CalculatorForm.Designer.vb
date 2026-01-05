@@ -25,6 +25,7 @@ Partial Class CalculatorForm
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(CalculatorForm))
         ToolStrip1 = New ToolStrip()
         OpenFile = New ToolStripButton()
+        Options = New ToolStripButton()
         SelectReportDialog = New OpenFileDialog()
         PlayersDataGridView = New DataGridView()
         StatusStrip1 = New StatusStrip()
@@ -33,7 +34,7 @@ Partial Class CalculatorForm
         CityLabel = New Label()
         RateLabel = New Label()
         ChiefLabel = New Label()
-        Options = New ToolStripButton()
+        PrintMenu = New ToolStripButton()
         ToolStrip1.SuspendLayout()
         CType(PlayersDataGridView, ComponentModel.ISupportInitialize).BeginInit()
         StatusStrip1.SuspendLayout()
@@ -41,7 +42,7 @@ Partial Class CalculatorForm
         ' 
         ' ToolStrip1
         ' 
-        ToolStrip1.Items.AddRange(New ToolStripItem() {OpenFile, Options})
+        ToolStrip1.Items.AddRange(New ToolStripItem() {OpenFile, Options, PrintMenu})
         ToolStrip1.Location = New Point(0, 0)
         ToolStrip1.Name = "ToolStrip1"
         ToolStrip1.Size = New Size(911, 25)
@@ -57,6 +58,15 @@ Partial Class CalculatorForm
         OpenFile.Size = New Size(23, 22)
         OpenFile.Text = "&Open"
         ' 
+        ' Options
+        ' 
+        Options.DisplayStyle = ToolStripItemDisplayStyle.Image
+        Options.Image = CType(resources.GetObject("Options.Image"), Image)
+        Options.ImageTransparentColor = Color.Magenta
+        Options.Name = "Options"
+        Options.Size = New Size(23, 22)
+        Options.Text = "O&ptions"
+        ' 
         ' SelectReportDialog
         ' 
         SelectReportDialog.FileName = "OpenFileDialog1"
@@ -70,16 +80,16 @@ Partial Class CalculatorForm
         PlayersDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells
         PlayersDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
         PlayersDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        PlayersDataGridView.Location = New Point(12, 189)
+        PlayersDataGridView.Location = New Point(12, 167)
         PlayersDataGridView.Name = "PlayersDataGridView"
         PlayersDataGridView.ReadOnly = True
-        PlayersDataGridView.Size = New Size(876, 273)
+        PlayersDataGridView.Size = New Size(876, 241)
         PlayersDataGridView.TabIndex = 3
         ' 
         ' StatusStrip1
         ' 
         StatusStrip1.Items.AddRange(New ToolStripItem() {pathStatus})
-        StatusStrip1.Location = New Point(0, 452)
+        StatusStrip1.Location = New Point(0, 396)
         StatusStrip1.Name = "StatusStrip1"
         StatusStrip1.Size = New Size(911, 22)
         StatusStrip1.TabIndex = 4
@@ -94,52 +104,52 @@ Partial Class CalculatorForm
         ' 
         EventLabel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         EventLabel.BorderStyle = BorderStyle.FixedSingle
-        EventLabel.Location = New Point(45, 25)
+        EventLabel.Location = New Point(45, 22)
         EventLabel.Name = "EventLabel"
-        EventLabel.Size = New Size(791, 23)
+        EventLabel.Size = New Size(791, 21)
         EventLabel.TabIndex = 5
         ' 
         ' CityLabel
         ' 
         CityLabel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         CityLabel.BorderStyle = BorderStyle.FixedSingle
-        CityLabel.Location = New Point(45, 59)
+        CityLabel.Location = New Point(45, 52)
         CityLabel.Name = "CityLabel"
-        CityLabel.Size = New Size(791, 23)
+        CityLabel.Size = New Size(791, 21)
         CityLabel.TabIndex = 6
         ' 
         ' RateLabel
         ' 
         RateLabel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         RateLabel.BorderStyle = BorderStyle.FixedSingle
-        RateLabel.Location = New Point(45, 98)
+        RateLabel.Location = New Point(45, 86)
         RateLabel.Name = "RateLabel"
-        RateLabel.Size = New Size(791, 23)
+        RateLabel.Size = New Size(791, 21)
         RateLabel.TabIndex = 11
         ' 
         ' ChiefLabel
         ' 
         ChiefLabel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
         ChiefLabel.BorderStyle = BorderStyle.FixedSingle
-        ChiefLabel.Location = New Point(45, 136)
+        ChiefLabel.Location = New Point(45, 120)
         ChiefLabel.Name = "ChiefLabel"
-        ChiefLabel.Size = New Size(791, 23)
+        ChiefLabel.Size = New Size(791, 21)
         ChiefLabel.TabIndex = 12
         ' 
-        ' Options
+        ' PrintMenu
         ' 
-        Options.DisplayStyle = ToolStripItemDisplayStyle.Image
-        Options.Image = CType(resources.GetObject("Options.Image"), Image)
-        Options.ImageTransparentColor = Color.Magenta
-        Options.Name = "Options"
-        Options.Size = New Size(23, 22)
-        Options.Text = "O&ptions"
+        PrintMenu.DisplayStyle = ToolStripItemDisplayStyle.Image
+        PrintMenu.Image = CType(resources.GetObject("PrintMenu.Image"), Image)
+        PrintMenu.ImageTransparentColor = Color.Magenta
+        PrintMenu.Name = "PrintMenu"
+        PrintMenu.Size = New Size(23, 22)
+        PrintMenu.Text = "ToolStripButton1"
         ' 
         ' CalculatorForm
         ' 
-        AutoScaleDimensions = New SizeF(7F, 17F)
+        AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(911, 474)
+        ClientSize = New Size(911, 418)
         Controls.Add(ChiefLabel)
         Controls.Add(RateLabel)
         Controls.Add(CityLabel)
@@ -169,5 +179,6 @@ Partial Class CalculatorForm
     Friend WithEvents RateLabel As Label
     Friend WithEvents ChiefLabel As Label
     Friend WithEvents Options As ToolStripButton
+    Friend WithEvents PrintMenu As ToolStripButton
 
 End Class

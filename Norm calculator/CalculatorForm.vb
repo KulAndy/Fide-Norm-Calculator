@@ -1,19 +1,19 @@
 ﻿Imports System.Globalization
 
 Public Class CalculatorForm
-    Private eventName As String = ""
-    Dim city As String = ""
-    Dim federation As String = ""
-    Dim startDate As Date = Nothing
-    Dim endDate As Date = Nothing
-    Dim playersNo As UShort = 0
-    Dim ratedPlayersNo As UShort = 0
-    Dim system As String = ""
-    Dim chief As String = ""
-    Dim deputies As New List(Of String)()
-    Dim rate As String = ""
-    Dim rounds As New List(Of Date)()
-    Dim playersDict As New Dictionary(Of UShort, Player)
+    Public eventName As String = ""
+    Public city As String = ""
+    Public federation As String = ""
+    Public startDate As Date = Nothing
+    Public endDate As Date = Nothing
+    Public playersNo As UShort = 0
+    Public ratedPlayersNo As UShort = 0
+    Public system As String = ""
+    Public chief As String = ""
+    Public deputies As New List(Of String)()
+    Public rate As String = ""
+    Public rounds As New List(Of Date)()
+    Public playersDict As New Dictionary(Of UShort, Player)
 
     Dim twoFederations As Boolean = True
     Dim roundRobinUnrated As Boolean = False
@@ -21,6 +21,19 @@ Public Class CalculatorForm
 
     Private Sub OpenFile_Click(sender As Object, e As EventArgs) Handles OpenFile.Click
         If SelectReportDialog.ShowDialog = DialogResult.OK Then
+            eventName = ""
+            city = ""
+            federation = ""
+            startDate = Nothing
+            endDate = Nothing
+            playersNo = 0
+            ratedPlayersNo = 0
+            system = ""
+            chief = ""
+            deputies = New List(Of String)()
+            rate = ""
+            rounds = New List(Of Date)()
+            playersDict = New Dictionary(Of UShort, Player)
             pathStatus.Text = SelectReportDialog.FileName
             playersDict.Clear()
             Dim objFile As New IO.StreamReader(SelectReportDialog.FileName)
@@ -418,6 +431,21 @@ Public Class CalculatorForm
         Return countryNo >= 2
     End Function
 
+    Public Function GetRequiredNormPoints(ByRef player As Player, title As Player.Title) As Single
+        Select Case title
+            Case Player.Title.GM
+                Return rounds.Count * player.GetReversedDelta(2600 - RaiseGMAverageRating(player))
+            Case Player.Title.IM
+                Return rounds.Count * player.GetReversedDelta(2450 - RaiseIMAverageRating(player))
+            Case Player.Title.GM
+                Return rounds.Count * player.GetReversedDelta(2400 - RaiseWGMAverageRating(player))
+            Case Player.Title.IM
+                Return rounds.Count * player.GetReversedDelta(2250 - RaiseWIMAverageRating(player))
+            Case Else
+                Return Single.NaN
+        End Select
+    End Function
+
     Public Function GetAverageRating(ByRef player As Player) As Single
         Dim ratings As New List(Of UShort)
         For Each roundItem As Round In player.rounds
@@ -536,5 +564,9 @@ Public Class CalculatorForm
             onlyGained = OptionsForm.OnlyGainedCB.Checked
             RefreshData()
         End If
+    End Sub
+
+    Private Sub PrintMenu_Click(sender As Object, e As EventArgs) Handles PrintMenu.Click
+        PrintForm.ShowDialog()
     End Sub
 End Class
