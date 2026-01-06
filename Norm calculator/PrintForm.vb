@@ -250,7 +250,7 @@ Public Class PrintForm
 
         result.AppendLine("}")
 
-        Dim filePath As String = SaveRtfFile(result.ToString(), "IT3_")
+        Dim filePath As String = SaveRtfFile(result.ToString(), "IT3 " & CalculatorForm.eventName & ".rtf")
         MessageBox.Show($"IT3 Report created:{Environment.NewLine}{filePath}")
     End Sub
 
@@ -262,16 +262,6 @@ Public Class PrintForm
             Return sr.ReadToEnd()
         End Using
     End Function
-
-    Private Function SaveRtfFile(content As String, Optional prefix As String = "NormCertificates_") As String
-        Dim path As String = IO.Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-        $"{prefix}{DateTime.Now:yyyyMMdd_HHmm}.rtf")
-
-        IO.File.WriteAllText(path, content)
-        Return path
-    End Function
-
 
     Private Sub GenerateIT1RtfFile()
         Dim template As String = LoadRtfTemplate()
@@ -299,7 +289,7 @@ Public Class PrintForm
 
         result.AppendLine("}")
 
-        Dim filePath As String = SaveRtfFile(result.ToString())
+        Dim filePath As String = SaveRtfFile(result.ToString(), "IT1 " & CalculatorForm.eventName & ".rtf")
         MessageBox.Show($"File created:{Environment.NewLine}{filePath}")
     End Sub
 
@@ -511,12 +501,13 @@ Public Class PrintForm
         End Select
     End Function
 
-    Private Function SaveRtfFile(content As String) As String
+    Private Function SaveRtfFile(content As String, Optional filename As String = "") As String
 
         Dim path As String =
         IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-            $"NormCertificates_{DateTime.Now:yyyyMMdd_HHmm}.rtf")
+            If(filename = "", $"NormCertificates_{Date.Now:yyyyMMdd_HHmm}.rtf", filename)
+        )
 
         IO.File.WriteAllText(path, content)
         Return path

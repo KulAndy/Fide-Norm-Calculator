@@ -269,7 +269,7 @@
         Dim result As Single = 0.0F
         Dim bestPercent As Single = 0.0F
 
-        While high - low > 0.0005F
+        While high - low > 0.001F
             mid = (low + high) / 2
             result = PercentToDelta(mid, 1)
 
@@ -281,7 +281,7 @@
             End If
         End While
 
-        Return bestPercent
+        Return bestPercent - 0.05
     End Function
 
 End Class
