@@ -51,7 +51,6 @@ Public Class PrintForm
         For Each kvp As KeyValuePair(Of String, Byte) In countries
             countryNo += 1
             If CalculatorForm.federation <> kvp.Key And "FID" <> kvp.Key And kvp.Value >= 0 Then
-                Debug.WriteLine(kvp.Key)
                 countryNo143d += 1
             End If
         Next

@@ -262,26 +262,14 @@
 
     End Function
 
-    Public Function GetReversedDelta(delta As Integer) As Single
-        Dim low As Single = 0.5F
-        Dim high As Single = 1.0F
-        Dim mid As Single = 0.0F
-        Dim result As Single = 0.0F
-        Dim bestPercent As Single = 0.0F
-
-        While high - low > 0.001F
-            mid = (low + high) / 2
-            result = PercentToDelta(mid, 1)
-
-            If result >= delta Then
-                bestPercent = mid
-                high = mid
-            Else
-                low = mid
+    Public Function GetReversedDelta(delta As Integer, Optional n As Integer = 1) As Single
+        For percent As Single = 0.0F To 1.0F Step 0.01F
+            If PercentToDelta(percent, n) >= delta Then
+                Return percent - 0.05F
             End If
-        End While
+        Next
 
-        Return bestPercent - 0.05
+        Return Single.NaN
     End Function
 
 End Class
