@@ -398,9 +398,9 @@ Public Class CalculatorForm
                 Return rounds.Count * player.GetReversedDelta(2600 - RaiseGMAverageRating(player))
             Case Player.Title.IM
                 Return rounds.Count * player.GetReversedDelta(2450 - RaiseIMAverageRating(player))
-            Case Player.Title.GM
+            Case Player.Title.WGM
                 Return rounds.Count * player.GetReversedDelta(2400 - RaiseWGMAverageRating(player))
-            Case Player.Title.IM
+            Case Player.Title.WIM
                 Return rounds.Count * player.GetReversedDelta(2250 - RaiseWIMAverageRating(player))
             Case Else
                 Return Single.NaN
