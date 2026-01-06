@@ -23,10 +23,12 @@
 
   <ItemGroup>
     <None Remove="IT1_template.rtf" />
+    <None Remove="IT3_template.rtf" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="IT1_template.rtf" />
+    <EmbeddedResource Include="IT3_template.rtf" />
   </ItemGroup>
 
   <ItemGroup>
