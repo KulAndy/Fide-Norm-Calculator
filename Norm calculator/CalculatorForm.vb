@@ -332,6 +332,7 @@ Public Class CalculatorForm
             player.playerSex = Player.Sex.W And
             (WIMs + WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WIMs + WGMs + IMs + GMs) >= 3 And
+            RaiseWIMAverageRating(player) >= 2030 And
             RaiseWIMAverageRating(player) + delta >= 2250 Then
             title = "WIM"
         End If
@@ -339,6 +340,7 @@ Public Class CalculatorForm
             player.playerSex = Player.Sex.W And
             (WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (WGMs + IMs + GMs) >= 3 And
+            RaiseWGMAverageRating(player) >= 2180 And
             RaiseWGMAverageRating(player) + delta >= 2400 Then
             title = "WGM"
         End If
@@ -346,6 +348,7 @@ Public Class CalculatorForm
         If player.playerTitle < Player.Title.IM And
             (IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
             (IMs + GMs) >= 3 And
+            RaiseIMAverageRating(player) >= 2230 And
             RaiseIMAverageRating(player) + delta >= 2450 Then
             title = "IM"
         End If
@@ -353,6 +356,7 @@ Public Class CalculatorForm
         If player.playerTitle < Player.Title.GM And
             GMs * 1.0 / count >= 1.0 / 3.0 And
             GMs >= 3 And
+            RaiseWGMAverageRating(player) >= 2380 And
             RaiseGMAverageRating(player) + delta >= 2600 Then
             title = "GM"
         End If
