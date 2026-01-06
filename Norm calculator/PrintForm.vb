@@ -1,7 +1,4 @@
 ﻿
-Imports System.ComponentModel
-Imports System.Runtime.InteropServices.JavaScript.JSType
-
 Public Class PrintForm
     Public Enum FormType
         IT1
@@ -25,7 +22,13 @@ Public Class PrintForm
         Dim countries As New Dictionary(Of String, Byte)
         For Each kvp As KeyValuePair(Of UShort, Player) In CalculatorForm.playersDict
             Dim player As Player = kvp.Value
-            If player.federation <> CalculatorForm.federation Then
+
+            If player.CountReadyRounds() = 0 Then Continue For
+
+            Dim fed As String = player.federation
+            Dim playedEntireTournament As Byte = 1
+
+            If player.federation <> CalculatorForm.federation And player.Count143d() Then
                 Select Case player.playerTitle
                     Case Player.Title.GM, Player.Title.IM, Player.Title.WGM, Player.Title.WIM
                         notHostTitled += 1
@@ -34,20 +37,21 @@ Public Class PrintForm
                 If player.rating >= 1400 Then
                     ratedNoHost += 1
                 End If
+
+                playedEntireTournament = 0
             End If
 
-            Dim fed As String = player.federation
             If countries.ContainsKey(fed) Then
-                countries(fed) += 1
+                countries(fed) += playedEntireTournament
             Else
-                countries(fed) = 1
+                countries(fed) = playedEntireTournament
             End If
-
         Next
 
         For Each kvp As KeyValuePair(Of String, Byte) In countries
             countryNo += 1
-            If CalculatorForm.federation <> kvp.Key And "FID" <> kvp.Key Then
+            If CalculatorForm.federation <> kvp.Key And "FID" <> kvp.Key And kvp.Value >= 0 Then
+                Debug.WriteLine(kvp.Key)
                 countryNo143d += 1
             End If
         Next
@@ -133,24 +137,29 @@ Public Class PrintForm
 
         Dim points = player.GetPoints()
         Dim requiredPoints = Single.NaN
+        Dim floor = 0
 
         Select Case norm
             Case "GM"
                 modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseGMAverageRating(player))
                 gmCirle = filledCirlceRTF
                 requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.GM)
+                floor = 2200
             Case "IM"
                 modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseIMAverageRating(player))
                 imCirle = filledCirlceRTF
                 requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.IM)
+                floor = 2050
             Case "WGM"
                 modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseWGMAverageRating(player))
                 wgmCirle = filledCirlceRTF
                 requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.WGM)
+                floor = 2000
             Case "WIM"
                 modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseWIMAverageRating(player))
                 wimCirle = filledCirlceRTF
                 requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.WIM)
+                floor = 1850
             Case Else
                 modified = modified.Replace("[$Ra$]", CalculatorForm.GetAverageRating(player))
         End Select
@@ -169,6 +178,7 @@ Public Class PrintForm
         Dim countryNotPlayerNo As Byte = 0
         Dim countryHostPlayerNo As Byte = 0
         Dim rated As Byte = 0
+        Dim minRating = UShort.MaxValue
 
         For Each roundItem As Round In player.rounds
             Try
@@ -182,6 +192,11 @@ Public Class PrintForm
                         End If
                         If CalculatorForm.federation = opponent.federation Then
                             countryHostPlayerNo += 1
+                        End If
+
+                        If opponent.rating >= 1400 Then
+                            rated += 1
+                            minRating = UShort.Min(minRating, opponent.rating)
                         End If
                 End Select
             Catch ex As Exception
@@ -212,15 +227,14 @@ Public Class PrintForm
             .Replace("[$wim$]", WIMs) _
             .Replace("[$wfm$]", WFMs)
 
-        Dim tableRtf As String = GeneratePlayerTableRtf(player)
+        Dim tableRtf As String = GeneratePlayerTableRtf(player, minRating, floor)
         modified = modified.Replace("[$tabela$]", tableRtf)
 
         Return modified
-
     End Function
 
 
-    Private Function GeneratePlayerTableRtf(player As Player) As String
+    Private Function GeneratePlayerTableRtf(player As Player, minRating As UShort, floor As UShort) As String
         Dim sb As New Text.StringBuilder()
 
         sb.AppendLine("\pard\plain\ql\li0\ri0\fi0\tx0\par")
@@ -238,13 +252,18 @@ Public Class PrintForm
         sb.AppendLine(cols)
         sb.AppendLine("\pard\intbl\b Rd\b0\cell\b Opponent\b0\cell\b ID\b0\cell\b Fed\b0\cell\b Rating\b0\cell\b Rat. 1.46c\b0\cell\b Title\b0\cell\b Score\b0\cell\row")
 
+        Dim usedFloor = False
         For i As Integer = 0 To player.rounds.Count - 1
             Dim roundItem As Round = player.rounds(i)
 
             Try
                 Dim opponent As Player = CalculatorForm.playersDict(roundItem.OpponentID)
                 Dim score As String = GetScoreSymbol(roundItem.GameResult)
-                Dim rating146c As String = If(opponent.rating >= 1400, opponent.rating.ToString(), "-")
+                Dim rating146c As String = ""
+                If opponent.rating = minRating And minRating < floor And Not usedFloor Then
+                    usedFloor = True
+                    rating146c = floor.ToString()
+                End If
 
                 sb.AppendLine("\trowd\trleft-1000\trgaph0")
                 sb.AppendLine(cols)

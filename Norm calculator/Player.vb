@@ -106,6 +106,22 @@
         Return points
     End Function
 
+    Public Function CountReadyRounds()
+        Dim count As Byte = 0
+        For Each roundItem As Round In rounds
+            Select Case roundItem.GameResult
+                Case Round.Result.WIN, Round.Result.DRAW, Round.Result.LOSE, Round.Result.FULLBYE
+                    count += 1
+            End Select
+        Next
+
+        Return count
+    End Function
+
+    Public Function Count143d()
+        Return Me.CountReadyRounds() + 1 >= CalculatorForm.rounds.Count
+    End Function
+
     Function GetDelta()
         Dim points As Single = 0
         Dim count As Single = 0
@@ -130,7 +146,7 @@
             Return 0
         End If
 
-        Return PercentToDelta(points, count)
+        Return Math.Round(PercentToDelta(points, count))
 
     End Function
 
@@ -253,7 +269,7 @@
         Dim result As Single = 0.0F
         Dim bestPercent As Single = 0.0F
 
-        While high - low > 0.001F
+        While high - low > 0.0005F
             mid = (low + high) / 2
             result = PercentToDelta(mid, 1)
 

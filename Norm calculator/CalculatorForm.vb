@@ -172,45 +172,6 @@ Public Class CalculatorForm
                         If player.federation = federation Then WFMsHost += 1 Else WFMsOther += 1
                 End Select
             Next
-
-            Debug.WriteLine("")
-            Debug.WriteLine("====================================================================")
-            Debug.WriteLine(rated)
-            Debug.WriteLine(GMs)
-            Debug.WriteLine(IMs)
-            Debug.WriteLine(FMs)
-            Debug.WriteLine(unrated)
-            Debug.WriteLine(WGMs)
-            Debug.WriteLine(WIMs)
-            Debug.WriteLine(WFMs)
-            Debug.WriteLine("====================================================================")
-            Debug.WriteLine(ratedFeds.Count)
-            Debug.WriteLine(GMsFeds.Count)
-            Debug.WriteLine(IMsFeds.Count)
-            Debug.WriteLine(FMsFeds.Count)
-            Debug.WriteLine(unratedFeds.Count)
-            Debug.WriteLine(WGMsFeds.Count)
-            Debug.WriteLine(WIMsFeds.Count)
-            Debug.WriteLine(WFMsFeds.Count)
-            Debug.WriteLine("====================================================================")
-            Debug.WriteLine(ratedHost)
-            Debug.WriteLine(GMsHost)
-            Debug.WriteLine(IMsHost)
-            Debug.WriteLine(FMsHost)
-            Debug.WriteLine(unratedHost)
-            Debug.WriteLine(WGMsHost)
-            Debug.WriteLine(WIMsHost)
-            Debug.WriteLine(WFMsHost)
-            Debug.WriteLine("====================================================================")
-            Debug.WriteLine(ratedOther)
-            Debug.WriteLine(GMsOther)
-            Debug.WriteLine(IMsOther)
-            Debug.WriteLine(FMsOther)
-            Debug.WriteLine(unratedOther)
-            Debug.WriteLine(WGMsOther)
-            Debug.WriteLine(WIMsOther)
-            Debug.WriteLine(WFMsOther)
-            Debug.WriteLine("====================================================================")
         End If
     End Sub
 
@@ -469,7 +430,7 @@ Public Class CalculatorForm
         If count = 0 Then
             Return 0
         Else
-            Return sum / count
+            Return Math.Round(sum / count)
         End If
     End Function
 
@@ -501,7 +462,7 @@ Public Class CalculatorForm
             sum += floor
         End If
 
-        Return sum / count
+        Return Math.Round(sum / count)
     End Function
 
     Public Function RaiseGMAverageRating(ByRef player As Player) As Single
