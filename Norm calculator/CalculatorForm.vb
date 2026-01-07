@@ -15,7 +15,7 @@ Public Class CalculatorForm
     Public rounds As New List(Of Date)()
     Public playersDict As New Dictionary(Of UShort, Player)
 
-    Dim twoFederations As Boolean = True
+    Public twoFederations As Boolean = True
     Dim roundRobinUnrated As Boolean = False
     Dim onlyGained As Boolean = False
 
@@ -241,26 +241,26 @@ Public Class CalculatorForm
             newRow("Federation") = player.federation
             newRow("FideID") = player.fideId
             newRow("Birthday") = If(player.birthday = "0000-00-00", "", player.birthday)
-            Dim norm = GetNorm(player)
+            Dim norm = GetNorm(player, playersDict)
             newRow("Norm") = norm
             If norm = "" And onlyGained Then
                 Continue For
             End If
 
             newRow("Points") = player.GetPoints()
-            newRow("GMs") = CountGMOpponents(player)
-            newRow("IMs") = CountIMOpponents(player)
-            newRow("FMs") = CountFMOpponents(player)
-            newRow("WGMs") = CountWGMOpponents(player)
-            newRow("WIMs") = CountWIMOpponents(player)
-            newRow("WFMs") = CountWFMOpponents(player)
+            newRow("GMs") = CountGMOpponents(player, playersDict)
+            newRow("IMs") = CountIMOpponents(player, playersDict)
+            newRow("FMs") = CountFMOpponents(player, playersDict)
+            newRow("WGMs") = CountWGMOpponents(player, playersDict)
+            newRow("WIMs") = CountWIMOpponents(player, playersDict)
+            newRow("WFMs") = CountWFMOpponents(player, playersDict)
             newRow("Delta") = player.GetDelta()
-            newRow("Perf") = GetAverageRating(player) + player.GetDelta()
-            newRow("ARO") = GetAverageRating(player)
-            newRow("GM raised") = RaiseGMAverageRating(player)
-            newRow("IM raised") = RaiseIMAverageRating(player)
-            newRow("WGM raised") = RaiseWGMAverageRating(player)
-            newRow("WIM raised") = RaiseWIMAverageRating(player)
+            newRow("Perf") = GetAverageRating(player, playersDict) + player.GetDelta()
+            newRow("ARO") = GetAverageRating(player, playersDict)
+            newRow("GM raised") = RaiseGMAverageRating(player, playersDict)
+            newRow("IM raised") = RaiseIMAverageRating(player, playersDict)
+            newRow("WGM raised") = RaiseWGMAverageRating(player, playersDict)
+            newRow("WIM raised") = RaiseWIMAverageRating(player, playersDict)
 
             For i = 0 To player.rounds.Count - 1
                 newRow($"Round{i + 1}") = If(player.rounds(i) IsNot Nothing, player.rounds(i).ToString(), "")
@@ -291,237 +291,6 @@ Public Class CalculatorForm
 
     End Sub
 
-    Function GetNorm(ByRef player As Player) As String
-        If Not (twoFederations Or CheckFederation(player)) Or player.playerTitle = Player.Title.GM Then
-            Return ""
-        End If
-
-        Dim title As String = ""
-        Dim delta As Single = player.GetDelta()
-        Dim WFMs = CountWFMOpponents(player)
-        Dim WIMs = CountWIMOpponents(player)
-        Dim WGMs = CountWGMOpponents(player)
-        Dim FMs = CountFMOpponents(player)
-        Dim IMs = CountIMOpponents(player)
-        Dim GMs = CountGMOpponents(player)
-        Dim count As Byte = 0
-        Dim points As Single = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN
-                        count += 1
-                        points += 1
-                    Case Round.Result.DRAW_NO1, Round.Result.DRAW
-                        count += 1
-                        points += 0.5
-                    Case Round.Result.LOSE_NO1, Round.Result.LOSE
-                        count += 1
-                End Select
-            Catch ex As Exception
-            End Try
-        Next
-
-        Dim titled = WFMs + WIMs + WGMs + FMs + IMs + GMs
-        If points / count < 0.35 Or titled * 1.0 / count < 1.0 / 2.0 Then
-            Return ""
-        End If
-
-
-        If player.playerTitle < Player.Title.WIM And
-            player.playerSex = Player.Sex.W And
-            (WIMs + WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
-            (WIMs + WGMs + IMs + GMs) >= 3 And
-            RaiseWIMAverageRating(player) >= 2030 And
-            RaiseWIMAverageRating(player) + delta >= 2250 Then
-            title = "WIM"
-        End If
-        If player.playerTitle < Player.Title.WGM And
-            player.playerSex = Player.Sex.W And
-            (WGMs + IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
-            (WGMs + IMs + GMs) >= 3 And
-            RaiseWGMAverageRating(player) >= 2180 And
-            RaiseWGMAverageRating(player) + delta >= 2400 Then
-            title = "WGM"
-        End If
-
-        If player.playerTitle < Player.Title.IM And
-            (IMs + GMs) * 1.0 / count >= 1.0 / 3.0 And
-            (IMs + GMs) >= 3 And
-            RaiseIMAverageRating(player) >= 2230 And
-            RaiseIMAverageRating(player) + delta >= 2450 Then
-            title = "IM"
-        End If
-
-        If player.playerTitle < Player.Title.GM And
-            GMs * 1.0 / count >= 1.0 / 3.0 And
-            GMs >= 3 And
-            RaiseWGMAverageRating(player) >= 2380 And
-            RaiseGMAverageRating(player) + delta >= 2600 Then
-            title = "GM"
-        End If
-
-        Return title
-    End Function
-
-    Function CheckFederation(ByRef player As Player) As Boolean
-        Dim countries As New Dictionary(Of String, Byte)
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        Dim fed As String = playersDict(roundItem.OpponentID).federation
-                        If countries.ContainsKey(fed) Then
-                            countries(fed) += 1
-                        Else
-                            countries(fed) = 1
-                        End If
-                End Select
-            Catch ex As Exception
-            End Try
-        Next
-
-        Dim countryNo As Byte = 0
-        For Each kvp As KeyValuePair(Of String, Byte) In countries
-            If player.federation <> kvp.Key Then
-                countryNo += 1
-                If kvp.Value / player.rounds.Count > 2.0 / 3.0 Then
-                    Return False
-                End If
-            ElseIf kvp.Value / player.rounds.Count > 3.0 / 5.0 Then
-                Return False
-            End If
-        Next
-
-        Return countryNo >= 2
-    End Function
-
-    Public Function GetRequiredNormPoints(ByRef player As Player, title As Player.Title) As Single
-        Select Case title
-            Case Player.Title.GM
-                Return rounds.Count * player.GetReversedDelta(2600 - RaiseGMAverageRating(player))
-            Case Player.Title.IM
-                Return rounds.Count * player.GetReversedDelta(2450 - RaiseIMAverageRating(player))
-            Case Player.Title.WGM
-                Return rounds.Count * player.GetReversedDelta(2400 - RaiseWGMAverageRating(player))
-            Case Player.Title.WIM
-                Return rounds.Count * player.GetReversedDelta(2250 - RaiseWIMAverageRating(player))
-            Case Else
-                Return Single.NaN
-        End Select
-    End Function
-
-    Public Function GetAverageRating(ByRef player As Player) As Single
-        Dim ratings As New List(Of UShort)
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).rating > 1400 Then
-                            ratings.Add(playersDict(roundItem.OpponentID).rating)
-                        Else
-                            ratings.Add(1400)
-                        End If
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Dim sum As Single = ratings.Sum(Function(item) item)
-        Dim count As Byte = ratings.Count()
-
-        If count = 0 Then
-            Return 0
-        Else
-            Return Math.Round(sum / count)
-        End If
-    End Function
-
-    Public Function RaiseTitleAverageRating(ByRef player As Player, floor As UShort) As Single
-        Dim ratings As New List(Of UShort)
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).rating > 1400 Then
-                            ratings.Add(playersDict(roundItem.OpponentID).rating)
-                        Else
-                            ratings.Add(1400)
-                        End If
-                End Select
-            Catch ex As Exception
-            End Try
-        Next
-
-        If ratings.Count = 0 Then
-            Return 0
-        End If
-
-        Dim sum As Single = ratings.Sum(Function(item) item)
-        Dim minimum As UShort = ratings.Min()
-        Dim count As Byte = ratings.Count()
-        If minimum < floor Then
-            sum -= minimum
-            sum += floor
-        End If
-
-        Return Math.Round(sum / count)
-    End Function
-
-    Public Function RaiseGMAverageRating(ByRef player As Player) As Single
-        Return RaiseTitleAverageRating(player, 2200)
-    End Function
-
-    Public Function RaiseIMAverageRating(ByRef player As Player) As Single
-        Return RaiseTitleAverageRating(player, 2050)
-    End Function
-
-    Public Function RaiseWGMAverageRating(ByRef player As Player) As Single
-        Return RaiseTitleAverageRating(player, 2000)
-    End Function
-
-    Public Function RaiseWIMAverageRating(ByRef player As Player) As Single
-        Return RaiseTitleAverageRating(player, 1850)
-    End Function
-
-
-    Public Function CountTitleOpponents(ByRef player As Player, title As Player.Title) As Byte
-        Dim count As Byte = 0
-        For Each roundItem As Round In player.rounds
-            Try
-                Select Case roundItem.GameResult
-                    Case Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.DRAW_NO1, Round.Result.DRAW, Round.Result.LOSE_NO1, Round.Result.LOSE
-                        If playersDict(roundItem.OpponentID).playerTitle = title Then count += 1
-                End Select
-            Catch ex As Exception
-
-            End Try
-        Next
-
-        Return count
-    End Function
-
-
-    Public Function CountGMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.GM)
-    End Function
-    Public Function CountIMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.IM)
-    End Function
-    Public Function CountFMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.FM)
-    End Function
-    Public Function CountWGMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.WGM)
-    End Function
-    Public Function CountWIMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.WIM)
-    End Function
-
-    Public Function CountWFMOpponents(ByRef player As Player) As Byte
-        Return CountTitleOpponents(player, Player.Title.WFM)
-    End Function
     Private Sub Options_Click(sender As Object, e As EventArgs) Handles Options.Click
         If OptionsForm.ShowDialog() = DialogResult.OK Then
             twoFederations = OptionsForm.twoFederationCB.Checked

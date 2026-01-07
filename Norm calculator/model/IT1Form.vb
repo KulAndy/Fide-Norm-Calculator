@@ -73,27 +73,27 @@
 
         Select Case norm
             Case "GM"
-                modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseGMAverageRating(player))
+                modified = modified.Replace("[$Ra$]", RaiseGMAverageRating(player, CalculatorForm.playersDict))
                 gmCirle = filledCircleRTF
-                requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.GM)
+                requiredPoints = GetRequiredNormPoints(player, Player.Title.GM, CalculatorForm.playersDict)
                 floor = 2200
             Case "IM"
-                modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseIMAverageRating(player))
+                modified = modified.Replace("[$Ra$]", RaiseIMAverageRating(player, CalculatorForm.playersDict))
                 imCirle = filledCircleRTF
-                requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.IM)
+                requiredPoints = GetRequiredNormPoints(player, Player.Title.IM, CalculatorForm.playersDict)
                 floor = 2050
             Case "WGM"
-                modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseWGMAverageRating(player))
+                modified = modified.Replace("[$Ra$]", RaiseWGMAverageRating(player, CalculatorForm.playersDict))
                 wgmCirle = filledCircleRTF
-                requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.WGM)
+                requiredPoints = GetRequiredNormPoints(player, Player.Title.WGM, CalculatorForm.playersDict)
                 floor = 2000
             Case "WIM"
-                modified = modified.Replace("[$Ra$]", CalculatorForm.RaiseWIMAverageRating(player))
+                modified = modified.Replace("[$Ra$]", RaiseWIMAverageRating(player, CalculatorForm.playersDict))
                 wimCirle = filledCircleRTF
-                requiredPoints = CalculatorForm.GetRequiredNormPoints(player, Player.Title.WIM)
+                requiredPoints = GetRequiredNormPoints(player, Player.Title.WIM, CalculatorForm.playersDict)
                 floor = 1850
             Case Else
-                modified = modified.Replace("[$Ra$]", CalculatorForm.GetAverageRating(player))
+                modified = modified.Replace("[$Ra$]", GetAverageRating(player, CalculatorForm.playersDict))
         End Select
 
 
@@ -143,12 +143,12 @@
             .Replace("[$tfe$]", countryNotPlayerNo) _
             .Replace("[$nphf$]", countryHostPlayerNo)
 
-        Dim WFMs = CalculatorForm.CountWFMOpponents(player)
-        Dim WIMs = CalculatorForm.CountWIMOpponents(player)
-        Dim WGMs = CalculatorForm.CountWGMOpponents(player)
-        Dim FMs = CalculatorForm.CountFMOpponents(player)
-        Dim IMs = CalculatorForm.CountIMOpponents(player)
-        Dim GMs = CalculatorForm.CountGMOpponents(player)
+        Dim WFMs = CountWFMOpponents(player, CalculatorForm.playersDict)
+        Dim WIMs = CountWIMOpponents(player, CalculatorForm.playersDict)
+        Dim WGMs = CountWGMOpponents(player, CalculatorForm.playersDict)
+        Dim FMs = CountFMOpponents(player, CalculatorForm.playersDict)
+        Dim IMs = CountIMOpponents(player, CalculatorForm.playersDict)
+        Dim GMs = CountGMOpponents(player, CalculatorForm.playersDict)
 
         modified = modified _
             .Replace("[$tnto$]", WFMs + WIMs + WGMs + FMs + IMs + GMs) _
