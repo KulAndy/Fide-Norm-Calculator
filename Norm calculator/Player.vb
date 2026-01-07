@@ -265,7 +265,7 @@
     Public Function GetReversedDelta(delta As Integer, Optional n As Integer = 1) As Single
         For percent As Single = 0.0F To 1.0F Step 0.01F
             If PercentToDelta(percent, n) >= delta Then
-                Return percent - 0.05F
+                Return percent - 0.005F
             End If
         Next
 
