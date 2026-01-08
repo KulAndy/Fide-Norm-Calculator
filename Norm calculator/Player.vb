@@ -94,7 +94,13 @@
 
     Public Function GetPoints() As Single
         Dim points As Single = 0
-        For Each roundItem As Round In rounds
+        For i As Integer = 0 To Me.rounds.Count - 1
+            Dim roundItem = rounds(i)
+            If CalculatorForm.ifWinLast And i = Me.rounds.Count - 1 Then
+                points += 1
+                Continue For
+            End If
+
             Select Case roundItem.GameResult
                 Case Round.Result.Plus, Round.Result.WIN_NO1, Round.Result.WIN, Round.Result.FULLBYE
                     points += 1
@@ -102,13 +108,19 @@
                     points += 0.5
             End Select
         Next
-
         Return points
     End Function
 
     Public Function CountReadyRounds()
         Dim count As Byte = 0
-        For Each roundItem As Round In rounds
+        For i As Integer = 0 To Me.rounds.Count - 1
+            Dim roundItem = rounds(i)
+
+            If CalculatorForm.ifWinLast And i = Me.rounds.Count - 1 Then
+                count += 1
+                Continue For
+            End If
+
             Select Case roundItem.GameResult
                 Case Round.Result.WIN, Round.Result.DRAW, Round.Result.LOSE, Round.Result.FULLBYE
                     count += 1

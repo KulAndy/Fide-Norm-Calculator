@@ -16,6 +16,7 @@ Public Class CalculatorForm
     Public playersDict As New Dictionary(Of UShort, Player)
 
     Public twoFederations As Boolean = True
+    Public ifWinLast As Boolean = False
     Dim onlyGained As Boolean = False
 
     Private Sub OpenFile_Click(sender As Object, e As EventArgs) Handles OpenFile.Click
@@ -279,7 +280,7 @@ Public Class CalculatorForm
         If PlayersDataGridView.Columns("Norm") IsNot Nothing AndAlso e.ColumnIndex = PlayersDataGridView.Columns("Norm").Index Then
             If e.Value <> "" Then
                 For Each cell As DataGridViewCell In PlayersDataGridView.Rows(e.RowIndex).Cells
-                    cell.Style.BackColor = Color.Green
+                    cell.Style.BackColor = If(ifWinLast, Color.Orange, Color.LightGreen)
                 Next
             Else
                 For Each cell As DataGridViewCell In PlayersDataGridView.Rows(e.RowIndex).Cells
@@ -293,6 +294,7 @@ Public Class CalculatorForm
     Private Sub Options_Click(sender As Object, e As EventArgs) Handles Options.Click
         If OptionsForm.ShowDialog() = DialogResult.OK Then
             twoFederations = OptionsForm.twoFederationCB.Checked
+            ifWinLast = OptionsForm.IfWinLastCB.Checked
             onlyGained = OptionsForm.OnlyGainedCB.Checked
             RefreshData()
         End If

@@ -26,6 +26,7 @@ Partial Class OptionsForm
         OKButton = New Button()
         CancelButton = New Button()
         OnlyGainedCB = New CheckBox()
+        IfWinLastCB = New CheckBox()
         SuspendLayout()
         ' 
         ' twoFederationCB
@@ -68,12 +69,23 @@ Partial Class OptionsForm
         OnlyGainedCB.Text = "Only gained"
         OnlyGainedCB.UseVisualStyleBackColor = True
         ' 
+        ' IfWinLastCB
+        ' 
+        IfWinLastCB.AutoSize = True
+        IfWinLastCB.Location = New Point(12, 61)
+        IfWinLastCB.Name = "IfWinLastCB"
+        IfWinLastCB.Size = New Size(76, 19)
+        IfWinLastCB.TabIndex = 5
+        IfWinLastCB.Text = "If win last"
+        IfWinLastCB.UseVisualStyleBackColor = True
+        ' 
         ' OptionsForm
         ' 
         AcceptButton = OKButton
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(402, 144)
+        Controls.Add(IfWinLastCB)
         Controls.Add(OnlyGainedCB)
         Controls.Add(CancelButton)
         Controls.Add(OKButton)
@@ -89,4 +101,5 @@ Partial Class OptionsForm
     Friend WithEvents OKButton As Button
     Friend WithEvents CancelButton As Button
     Friend WithEvents OnlyGainedCB As CheckBox
+    Friend WithEvents IfWinLastCB As CheckBox
 End Class
