@@ -16,7 +16,6 @@ Public Class CalculatorForm
     Public playersDict As New Dictionary(Of UShort, Player)
 
     Public twoFederations As Boolean = True
-    Dim roundRobinUnrated As Boolean = False
     Dim onlyGained As Boolean = False
 
     Private Sub OpenFile_Click(sender As Object, e As EventArgs) Handles OpenFile.Click
@@ -294,7 +293,6 @@ Public Class CalculatorForm
     Private Sub Options_Click(sender As Object, e As EventArgs) Handles Options.Click
         If OptionsForm.ShowDialog() = DialogResult.OK Then
             twoFederations = OptionsForm.twoFederationCB.Checked
-            roundRobinUnrated = OptionsForm.RRUnratedCB.Checked
             onlyGained = OptionsForm.OnlyGainedCB.Checked
             RefreshData()
         End If

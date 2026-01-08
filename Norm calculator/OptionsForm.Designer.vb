@@ -23,7 +23,6 @@ Partial Class OptionsForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         twoFederationCB = New CheckBox()
-        RRUnratedCB = New CheckBox()
         OKButton = New Button()
         CancelButton = New Button()
         OnlyGainedCB = New CheckBox()
@@ -40,16 +39,6 @@ Partial Class OptionsForm
         twoFederationCB.TabIndex = 0
         twoFederationCB.Text = "2 Federations"
         twoFederationCB.UseVisualStyleBackColor = True
-        ' 
-        ' RRUnratedCB
-        ' 
-        RRUnratedCB.AutoSize = True
-        RRUnratedCB.Location = New Point(12, 34)
-        RRUnratedCB.Name = "RRUnratedCB"
-        RRUnratedCB.Size = New Size(133, 19)
-        RRUnratedCB.TabIndex = 1
-        RRUnratedCB.Text = "round robin unrated"
-        RRUnratedCB.UseVisualStyleBackColor = True
         ' 
         ' OKButton
         ' 
@@ -72,7 +61,7 @@ Partial Class OptionsForm
         ' OnlyGainedCB
         ' 
         OnlyGainedCB.AutoSize = True
-        OnlyGainedCB.Location = New Point(12, 59)
+        OnlyGainedCB.Location = New Point(12, 36)
         OnlyGainedCB.Name = "OnlyGainedCB"
         OnlyGainedCB.Size = New Size(90, 19)
         OnlyGainedCB.TabIndex = 4
@@ -88,7 +77,6 @@ Partial Class OptionsForm
         Controls.Add(OnlyGainedCB)
         Controls.Add(CancelButton)
         Controls.Add(OKButton)
-        Controls.Add(RRUnratedCB)
         Controls.Add(twoFederationCB)
         KeyPreview = True
         Name = "OptionsForm"
@@ -98,7 +86,6 @@ Partial Class OptionsForm
     End Sub
 
     Friend WithEvents twoFederationCB As CheckBox
-    Friend WithEvents RRUnratedCB As CheckBox
     Friend WithEvents OKButton As Button
     Friend WithEvents CancelButton As Button
     Friend WithEvents OnlyGainedCB As CheckBox
