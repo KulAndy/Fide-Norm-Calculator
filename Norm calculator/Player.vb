@@ -122,7 +122,7 @@
             End If
 
             Select Case roundItem.GameResult
-                Case Round.Result.WIN, Round.Result.DRAW, Round.Result.LOSE, Round.Result.FULLBYE
+                Case Round.Result.WIN, Round.Result.DRAW, Round.Result.LOSE, Round.Result.UNPAIRED
                     count += 1
             End Select
         Next

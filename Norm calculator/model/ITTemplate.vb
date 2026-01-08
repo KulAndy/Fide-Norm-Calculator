@@ -31,6 +31,7 @@
                     ratedNoHost += 1
                 End If
 
+            Else
                 playedEntireTournament = 0
             End If
 
@@ -43,7 +44,7 @@
 
         For Each kvp As KeyValuePair(Of String, Byte) In countries
             countryNo += 1
-            If CalculatorForm.federation <> kvp.Key And "FID" <> kvp.Key And kvp.Value >= 0 Then
+            If CalculatorForm.federation <> kvp.Key And "FID" <> kvp.Key And kvp.Value > 0 Then
                 countryNo143d += 1
             End If
         Next
